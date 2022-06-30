@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+        
+    tools {
+    maven 'maven' 
+  }
+
+    stages {
+       stage("Git Checkout"){
+          steps{
+           git 'https://github.com/chenna6/mini-project.git'
+           }
+          }
+          
+           stage("build"){
+          steps{
+           sh "mvn -f client-project/pom.xml clean package"
+           }
+          }
+        
+        stage ('Deploy') {
+      steps {
+        script {
+          deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://13.232.199.211:8080/')], contextPath: '', onFailure: false, war: 'client-project/target/*.war' 
+        }
+      }
+    }
+    }
+}
